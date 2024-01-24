@@ -1,7 +1,7 @@
 ---
 title: "Assignment 1"
 author: "Lakshika, Mrunal Dhiwar, Ringan Majumdar, Rishiraj Sutar, Sandeep Parmar"
-date: "2024-01-23"
+date: "2024-01-24"
 output: pdf_document
 ---
 
@@ -12,7 +12,7 @@ knitr::opts_chunk$set(warning = F, message = F)
 
 ## Question 1
 
-Download Iris data and check whether the observations associated with Iris setosa, Iris virginica and Iris versicolor obtained from the same distribution or not
+Download Iris data and check whether the observations associated with Iris setosa, Iris virginica and Iris versicolor are obtained from the same distribution or not
 
 ### Data Description
 
@@ -23,15 +23,15 @@ The Iris dataset consists of measurements of four features of three species of I
 3.  Petal Length: The length of the iris flower's petal (the innermost whorl of a flower) in centimeters.
 4.  Petal Width: The width of the iris flower's petal in centimeters.
 
-These measurements are taken from 150 different iris flowers, with 50 samples from each of three different species: **Setosa, Versicolor**, and **Virginica.**
+These measurements are taken from 150 different iris flowers, with 50 samples from each of three different species: **Setosa, Virginica** and **Versicolor**, **.**
 
 We need to check whether the observations from the different species come from the same distribution or not.
 
-### What is Half Space Depth?
+### What is Data Depth and Half Space Depth?
 
 Data depth induces a data-dependent ordering of $\mathbb{R}^d$ in the center-outwards sense --- points of high depth form the center of the dataset and low depth points occupy the data cloud's outskirts.
 
-*HALFSPACE DEPTH*
+**HALFSPACE DEPTH**
 
 The halfspace depth of $x\in\mathbb{R}^d$ w.r.t $F\in\mathcal{P}(\mathbb{R}^d)$ is
 
@@ -60,44 +60,44 @@ iris_versicolor <- iris[101:150, 0:4]
 p11 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width,
                  group = Species, colour = Species)) + 
   geom_point() +
-  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  scale_colour_manual(values = c("red", "deepskyblue", "purple")) + 
   theme_test()
 
 p12 <- ggplot(iris, aes(x = Sepal.Length, y = Petal.Length,
                  group = Species, colour = Species)) + 
   geom_point() +
-  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  scale_colour_manual(values = c("red", "deepskyblue", "purple")) + 
   theme_test()
 
 p13 <- ggplot(iris, aes(x = Sepal.Width, y = Petal.Width,
                  group = Species, colour = Species)) + 
   geom_point() +
-  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  scale_colour_manual(values = c("red", "deepskyblue","purple")) + 
   theme_test()
 
 p14 <- ggplot(iris, aes(x = Petal.Length, y = Petal.Width,
                  group = Species, colour = Species)) + 
   geom_point() +
-  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  scale_colour_manual(values = c("red", "deepskyblue", "purple")) + 
   theme_test()
 
 p15 <- ggplot(iris, aes(x = Petal.Length, y = Sepal.Width,
                         group = Species, colour = Species)) + 
   geom_point() +
-  scale_colour_manual(values = c("red", "purple", "deepskyblue")) +
+  scale_colour_manual(values = c("red", "deepskyblue", "purple")) +
   theme_test()
 
 p16 <- ggplot(iris, aes(x = Sepal.Length, y = Petal.Width,
                         group = Species, colour = Species)) + 
   geom_point() +
-  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  scale_colour_manual(values = c("red", "deepskyblue", "purple")) + 
   theme_test()
 
 
 gridExtra::grid.arrange(p11, p12, p13, p14, p15, p16, top = "Scatter Plots for different variables for all species")
 ```
 
-These plots are all possible scatter plots for the 4 different variables i.e Sepal Length, Sepal Width, Petal Length, Petal Width for the three different species. Clearly observe that the centres of the pairwise observation s are far away from each other. More, the nature of the spread of the observations differs in different species.
+These plots are all possible scatter plots for the 4 different variables i.e Sepal Length, Sepal Width, Petal Length, Petal Width for the three different species. Clearly observe that the centres of the pairwise observations are far away from each other. Moreover, the nature of the spread of the observations differs in different species.
 
 Now, let us make the DD-plots for the raw data.
 
@@ -134,7 +134,7 @@ p22 <- ggplot(dsp[c(1:50, 101:150), ]) +
 
 p23 <- ggplot(dsp[51:150, ]) + 
   geom_point(aes(x = Iris_Virginica, y = Iris_Versicolor, color = species)) + 
-  scale_color_manual(values = c("purple", "deepskyblue")) + 
+  scale_color_manual(values = c("deepskyblue", "purple")) + 
   labs(title = "DD plot of Versicolor vs Virginica", x = "Depth w.r.t. Iris Virginica", y = "Depth w.r.t. Iris Versicolor") +
   geom_abline(intercept = 0, slope = 1, linewidth = 0.25) + 
   theme_test()
@@ -143,9 +143,9 @@ gridExtra::grid.arrange(p21, p22, p23, ncol = 1, top = "DD-plots without standar
 
 ```
 
-Observe that the plots are L-shaped in nature. On the other hand, for each of the plot the data the depth of one species w.r.t. the other species lies above or below the $y = x$ line. This implies that each of the sample for one species is very far away from the other sample for the other species. In other words there are significant difference in location for all the three species.
+Observe that the plots are L-shaped in nature. On the other hand, for each of the plot the data depth of one species w.r.t. the other species lies above or below the $y = x$ line. This implies that each of the sample for one species is very far away from the other sample for the other species. In other words, there is a significant difference in location for all the three species.
 
-So, there might be the case that the data is obtained from same distribution but the plots are like this because of the difference of the location. Now, let us visualise the data after standardization of all the three clusters, namely, setosa, virginica and versicolor.
+So, this might be the case that the data is obtained from same distribution but the plots are like this because of the location difference. Now, let us visualise the data after standardization of all the three clusters, namely, setosa, virginica and versicolor.
 
 ```{r, echo = F, fig.height= 8, fig.width=7.5, fig.align='center'}
 
@@ -170,44 +170,44 @@ dfs <- cbind(df, Species)
 p11 <- ggplot(dfs, aes(x = Sepal.Length, y = Sepal.Width,
                  group = Species, colour = Species)) + 
   geom_point() +
-  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  scale_colour_manual(values = c("red","deepskyblue","purple")) + 
   theme_test()
 
 p12 <- ggplot(dfs, aes(x = Sepal.Length, y = Petal.Length,
                  group = Species, colour = Species)) + 
   geom_point() +
-  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  scale_colour_manual(values = c("red","deepskyblue", "purple")) + 
   theme_test()
 
 p13 <- ggplot(dfs, aes(x = Sepal.Width, y = Petal.Width,
                  group = Species, colour = Species)) + 
   geom_point() +
-  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  scale_colour_manual(values = c("red","deepskyblue", "purple")) + 
   theme_test()
 
 p14 <- ggplot(dfs, aes(x = Petal.Length, y = Petal.Width,
                  group = Species, colour = Species)) + 
   geom_point() +
-  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  scale_colour_manual(values = c("red","deepskyblue",  "purple")) + 
   theme_test()
 
 p15 <- ggplot(dfs, aes(x = Petal.Length, y = Sepal.Width,
                         group = Species, colour = Species)) + 
   geom_point() +
-  scale_colour_manual(values = c("red", "purple", "deepskyblue")) +
+  scale_colour_manual(values = c("red", "deepskyblue", "purple")) +
   theme_test()
 
 p16 <- ggplot(dfs, aes(x = Sepal.Length, y = Petal.Width,
                         group = Species, colour = Species)) + 
   geom_point() +
-  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  scale_colour_manual(values = c("red","deepskyblue",  "purple")) + 
   theme_test()
 
 
 gridExtra::grid.arrange(p11, p12, p13, p14, p15, p16, top = "Scatter Plots for different variables after standardizarion for all species")
 ```
 
-Clearly, after standardizing the data, all are clustered around the same point. Hence, we have done the DD-plots again after standardizing the data.
+Clearly, after standardizing the data, all the three species are clustered around the same space. Hence, we have done the DD-plots again after standardizing the data.
 
 ```{r ,echo = F, fig.height= 7.5, fig.width=5, fig.align='center'}
 
@@ -247,7 +247,7 @@ p32 <- ggplot(dspace[c(1:50, 101:150), ]) +
 
 p33 <- ggplot(dspace[51:150, ]) + 
   geom_point(aes(x = Iris_Virginica, y = Iris_Versicolor, color = species)) + 
-  scale_color_manual(values = c("purple", "deepskyblue")) + 
+  scale_color_manual(values = c("deepskyblue",  "purple")) + 
   labs(title = "DD plot of Versicolor vs Virginica", x = "Depth w.r.t. Iris Virginica", y = "Depth w.r.t. Iris Versicolor") +
   geom_abline(intercept = 0, slope = 1, linewidth = 0.25) + 
   theme_test()
@@ -256,7 +256,7 @@ gridExtra::grid.arrange(p31, p32, p33, ncol = 1, top = "DD-plots with standardiz
 
 ```
 
-Clearly, the nature of the DD plots changes a lot after standardization. The points now fall more or less along the $y = x$ line but still the data clouds are not aligned to a satisfactory extent.
+There is a significant change in the nature of DD plots after standardization. The points now fall more or less along the $y = x$ line but still the data clouds are not aligned to a satisfactory extent.
 
 ### Conclusion
 
@@ -278,7 +278,7 @@ The dataset used in this assignment has been taken from the National Institute o
 
 4.  Insulin level
 
-For our assignment, we have conside#a18aea a bivariate data by choosing Glucose concentration and Blood Pressure as our variable of interest.
+For our assignment, we have considered a bivariate data by choosing Glucose concentration and Blood Pressure as our variable of interest.
 
 ### What are Quantile Contours?
 
@@ -353,7 +353,7 @@ step2 <- function(X,n,u){
 
 ### Plots
 
-The centre-outward ordering induced by a data depth immediately gives rise to a simple graphic technique for presenting bivariate data sets. This technique can be viewed as a generalization of the univariate box-plot or box-and-whiskers plot. The plot resembles the sun with its rays radiating in all directions, and is thus named the sunburst
+The centre-outward ordering induced by a data depth immediately gives rise to a simple graphic technique for presenting bivariate data sets. This technique can be viewed as a generalization of the univariate box-plot or box-and-whiskers plot. The plot resembles the sun with its rays radiating in all directions, and is thus named the sunburst plot.
 
 ```{r, echo = F, fig.height= 3.5, fig.width=3.5, fig.align='center'}
 
@@ -390,7 +390,7 @@ quantile_points8 <- read.csv("quantile_points8.csv")[, 2:3]
 quantile_points9 <- read.csv("quantile_points9.csv")[, 2:3]
 
 
-plot(X , ylim = c(0 , 140), pch = 20, col = '#58508d', xlab = "Glucose Concentration", ylab = "Blood Pressure" , main= "Quantile Contour Plots")
+plot(X , ylim = c(0 , 140), pch = 20, col = '#58508d', xlab = "Glucose Concentration", ylab = "Blood Pressure" , main= "Quantile Contour Plot")
 
 lines(quantile_points1[, 1], quantile_points1[, 2], col = "#a18aea", lwd = 2)
 lines(quantile_points2[, 1], quantile_points2[, 2], col = "#a18aea", lwd = 2)
@@ -404,4 +404,4 @@ lines(quantile_points9[, 1], quantile_points9[, 2], col = "#a18aea", lwd = 2)
 
 ```
 
-**Interpretation:** we can see that there are some outliers in the lower left and upper right corners of the plot, where the data points are far away from the contours. The contour plot can also be used to compare the data with a theoretical model or a fitted curve. For example, we can see that the contours are roughly elliptical in shape, which suggests that the data might follow a bivariate normal distribution.
+**Interpretation:** We can see that there are some outliers in the lower left and upper right corners of the plot, where the data points are far away from the contours. The contour plot can also be used to compare the data with a theoretical model or a fitted curve. For example, we can see that the contours are roughly elliptical in shape, which suggests that the data might follow a bivariate normal distribution.
