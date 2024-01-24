@@ -1,0 +1,274 @@
+---
+title: "Assignment 1"
+author: "Lakshika, Mrunal Dhiwar, Ringan Majumdar, Rishiraj Sutar, Sandeep Parmar"
+date: "2024-01-23"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = F, message = F)
+```
+
+## Question 1
+
+Download Iris data and check whether the observations associated with Iris setosa, Iris virginica and Iris versicolor obtained from the same distribution or not
+
+### Data Description
+
+The Iris dataset consists of measurements of four features of three species of Iris flowers, namely:
+
+1.  Sepal Length: The length of the iris flower's sepal (the outermost whorl of a flower) in centimeters.
+2.  Sepal Width: The width of the iris flower's sepal in centimeters.
+3.  Petal Length: The length of the iris flower's petal (the innermost whorl of a flower) in centimeters.
+4.  Petal Width: The width of the iris flower's petal in centimeters.
+
+These measurements are taken from 150 different iris flowers, with 50 samples from each of three different species: **Setosa, Versicolor**, and **Virginica.**
+
+We need to check whether the observations from the different species come from the same distribution or not.
+
+### What is Half Space Depth?
+
+Data depth induces a data-dependent ordering of $\mathbb{R}^d$ in the center-outwards sense --- points of high depth form the center of the dataset and low depth points occupy the data cloud's outskirts.
+
+*HALFSPACE DEPTH*
+
+The halfspace depth of $x\in\mathbb{R}^d$ w.r.t $F\in\mathcal{P}(\mathbb{R}^d)$ is
+
+<center>$D(x;F) = \inf\limits_{u\in\mathbb{S}^{d-1}} P(H_{x, u}),$</center>
+
+where $\mathbb{S}^{d-1} = \{x\in\mathbb{R}^d : ||x|| = 1\}$ is the unit sphere in $\mathbb{R}^d$, and $H_{x, u} = \{y \in\mathbb{R}^d : \langle \; x - y , u \; \rangle \leq 0$ is the closed halfspace whose boundary hyperplane passes through $x\in\mathbb{R}^d$ with inner unit normal $u\in\mathbb{S}^{d-1}$. In other words, the halfspace depth of a point x is the minimum $P$-mass of a halfspace that contains $x$.
+
+
+### Methodology
+
+The approach we have taken to solve this problem is using data depth, more specifically half space depth. We have multivariate data for three different species. So, we have focused upon the graphical comparisons . Hence we have made pairwise DD plots for three different species and then commented about whether they are obtained from same populations or not.
+
+
+### Plots
+
+```{r, echo = F, fig.height= 9, fig.width=7.5, fig.align='center'}
+
+library(dplyr)
+library(ggplot2)
+library(ddalpha)
+
+iris_setosa <- iris[1:50, 0:4]
+iris_virginica <- iris[51:100, 0:4]
+iris_versicolor <- iris[101:150, 0:4]
+
+#### ggplots before standardization
+
+p11 <- ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width,
+                 group = Species, colour = Species)) + 
+  geom_point() +
+  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  theme_test()
+
+p12 <- ggplot(iris, aes(x = Sepal.Length, y = Petal.Length,
+                 group = Species, colour = Species)) + 
+  geom_point() +
+  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  theme_test()
+
+p13 <- ggplot(iris, aes(x = Sepal.Width, y = Petal.Width,
+                 group = Species, colour = Species)) + 
+  geom_point() +
+  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  theme_test()
+
+p14 <- ggplot(iris, aes(x = Petal.Length, y = Petal.Width,
+                 group = Species, colour = Species)) + 
+  geom_point() +
+  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  theme_test()
+
+p15 <- ggplot(iris, aes(x = Petal.Length, y = Sepal.Width,
+                        group = Species, colour = Species)) + 
+  geom_point() +
+  scale_colour_manual(values = c("red", "purple", "deepskyblue")) +
+  theme_test()
+
+p16 <- ggplot(iris, aes(x = Sepal.Length, y = Petal.Width,
+                        group = Species, colour = Species)) + 
+  geom_point() +
+  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  theme_test()
+
+
+gridExtra::grid.arrange(p11, p12, p13, p14, p15, p16, top = "Scatter Plots for different variables for all species")
+```
+
+These plots are all possible scatter plots for the 4 different variables i.e Sepal Length, Sepal Width, Petal Length, Petal Width for the three different species. Clearly observe that the centres of the pairwise observation s are far away from each other. More, the nature of the spread of the observations differs in different species.
+
+Now, let us make the DD-plots for the raw data.
+
+```{r ,echo = F, fig.height= 8, fig.width=5, fig.align='center'}
+
+library(dplyr)
+library(ggplot2)
+library(ddalpha)
+
+iris_setosa <- iris[1:50, 0:4]
+iris_virginica <- iris[51:100, 0:4]
+iris_versicolor <- iris[101:150, 0:4]
+dat <- rbind(iris_setosa, iris_virginica, iris_versicolor)
+dsp <- as.data.frame(depth.space.halfspace(dat, c(50, 50, 50)))
+
+#### dd plots without any standardization
+
+dsp$species <- factor(rep(c("Setosa", "Virginica", "Versicolor"), each = 50))
+
+colnames(dsp) <- c("Iris_Setosa", "Iris_Virginica", "Iris_Versicolor", "species")
+p21 <- ggplot(dsp[1:100, ]) + 
+  geom_point(aes(x = Iris_Setosa, y = Iris_Virginica, color = species)) + 
+  scale_color_manual(values = c("red", "purple")) + 
+  labs(title = "DD plot of Virginica vs Setosa", x = "Depth w.r.t. Iris Setosa", y = "Depth w.r.t. Iris Virginica") +
+  geom_abline(intercept = 0, slope = 1, linewidth = 0.25) + 
+  theme_test()
+
+p22 <- ggplot(dsp[c(1:50, 101:150), ]) + 
+  geom_point(aes(x = Iris_Setosa, y = Iris_Versicolor, color = species)) + 
+  scale_color_manual(values = c("red", "deepskyblue")) + 
+  labs(title = "DD plot of Versicolor vs Setosa", x = "Depth w.r.t. Iris Setosa", y = "Depth w.r.t. Iris Versicolor") + 
+  geom_abline(intercept = 0, slope = 1, linewidth = 0.25) + 
+  theme_test()
+
+p23 <- ggplot(dsp[51:150, ]) + 
+  geom_point(aes(x = Iris_Virginica, y = Iris_Versicolor, color = species)) + 
+  scale_color_manual(values = c("purple", "deepskyblue")) + 
+  labs(title = "DD plot of Versicolor vs Virginica", x = "Depth w.r.t. Iris Virginica", y = "Depth w.r.t. Iris Versicolor") +
+  geom_abline(intercept = 0, slope = 1, linewidth = 0.25) + 
+  theme_test()
+
+gridExtra::grid.arrange(p21, p22, p23, ncol = 1, top = "DD-plots without standardization")
+
+```
+
+Observe that the plots are L-shaped in nature. On the other hand, for each of the plot the data the depth of one species w.r.t. the other species lies above or below the $y = x$ line. This implies that each of the sample for one species is very far away from the other sample for the other species. In other words there are significant difference in location for all the three species.
+
+So, there might be the case that the data is obtained from same distribution but the plots are like this because of the difference of the location. Hence, we have done the DD-plots again after standardizing the data.
+
+```{r ,echo = F, fig.height= 7.5, fig.width=5, fig.align='center'}
+
+library(dplyr)
+library(ggplot2)
+library(ddalpha)
+
+iris_setosa <- iris[1:50, 0:4]
+iris_virginica <- iris[51:100, 0:4]
+iris_versicolor <- iris[101:150, 0:4]
+
+iris_setosa <- iris_setosa %>% mutate_all(~(scale(.) %>% as.vector))
+iris_virginica  <- iris_virginica  %>% mutate_all(~(scale(.) %>% as.vector))
+iris_versicolor <- iris_versicolor %>% mutate_all(~(scale(.) %>% as.vector))
+
+df <- rbind(iris_setosa, iris_virginica, iris_versicolor)
+Species <- iris[,5]
+dfs <- cbind(df, Species)
+
+dspace <- as.data.frame(depth.space.halfspace(df, c(50, 50, 50)))
+dspace$species <- factor(rep(c("Setosa", "Virginica", "Versicolor"), each = 50))
+
+colnames(dspace) <- c("Iris_Setosa", "Iris_Virginica", "Iris_Versicolor", "species")
+p31 <- ggplot(dspace[1:100, ]) + 
+  geom_point(aes(x = Iris_Setosa, y = Iris_Virginica, color = species)) + 
+  scale_color_manual(values = c("red", "purple")) + 
+  labs(title = "DD plot of Virginica vs Setosa", x = "Depth w.r.t. Iris Setosa", y = "Depth w.r.t. Iris Virginica") +
+  geom_abline(intercept = 0, slope = 1, linewidth = 0.25) + 
+  theme_test()
+
+p32 <- ggplot(dspace[c(1:50, 101:150), ]) + 
+  geom_point(aes(x = Iris_Setosa, y = Iris_Versicolor, color = species)) + 
+  scale_color_manual(values = c("red", "deepskyblue")) + 
+  labs(title = "DD plot of Versicolor vs Setosa", x = "Depth w.r.t. Iris Setosa", y = "Depth w.r.t. Iris Versicolor") + 
+  geom_abline(intercept = 0, slope = 1, linewidth = 0.25) + 
+  theme_test()
+
+p33 <- ggplot(dspace[51:150, ]) + 
+  geom_point(aes(x = Iris_Virginica, y = Iris_Versicolor, color = species)) + 
+  scale_color_manual(values = c("purple", "deepskyblue")) + 
+  labs(title = "DD plot of Versicolor vs Virginica", x = "Depth w.r.t. Iris Virginica", y = "Depth w.r.t. Iris Versicolor") +
+  geom_abline(intercept = 0, slope = 1, linewidth = 0.25) + 
+  theme_test()
+
+gridExtra::grid.arrange(p31, p32, p33, ncol = 1, top = "DD-plots with standardization")
+
+```
+
+Clearly, the nature of the DD plots changes a lot after standardization. The points now fall more or less along the $y = x$ line but still the data clouds are not aligned to a satisfactory extent.
+
+### Conclusion
+
+Since, the points don't fall along the $y = x$ line even after standardizing, we conclude that the data for different species don't come from the same distribution.
+
+## Question 2
+
+Download a multivariate (i.e, dimension is strictly greater than one) data and compute/draw multivariate quantile contours when $||u|| = \frac{i}{10}$ , where $i = 1,\dots, 9$. Using those contours, describe various features of the data set.
+
+### Data Description
+
+The dataset used in this assignment has been taken from the National Institute of Diabetes and Kidney Disease. It contains information about 200 patients across 4 variables. The different variables are:
+
+1.  Age of Person
+
+2.  Glucose concentration in Blood
+
+3.  Diastolic Blood Pressure
+
+4.  Insulin level
+
+For our assignment, we have conside#a18aea a bivariate data by choosing Glucose concentration and Blood Pressure as our variable of interest.
+
+### What is Quantile Contours?
+
+### Methodology
+
+### Plots
+
+```{r, echo = F, fig.height= 5, fig.width=5, fig.align='center'}
+
+library(aplpack)
+
+X <- read.csv('data_for_plot.csv')[, 2:3]
+bagplot(X,create.plot=TRUE,
+        show.outlier=TRUE,show.looppoints=TRUE,
+        show.bagpoints=TRUE,dkmethod=2,
+        col.baghull = '#c1e7ff',
+        col.loophull = '#7aa6c2',
+        col.looppoints = '#004c6d',
+        col.bagpoints = '#004c6d',
+        show.whiskers=TRUE,show.loophull=FALSE,
+        show.baghull=TRUE,verbose=FALSE, xlab = "Glucose Concentration", ylab = "Blood Pressure" , main= "Sunburst plot")
+```
+
+
+```{r, echo = F, fig.height= 5, fig.width=5, fig.align='center'}
+
+library(dplyr)
+X <- read.csv('data_for_plot.csv')[, 2:3]
+quantile_points1 <- read.csv("quantile_points1.csv")[, 2:3]
+quantile_points2 <- read.csv("quantile_points2.csv")[, 2:3]
+quantile_points3 <- read.csv("quantile_points3.csv")[, 2:3]
+quantile_points4 <- read.csv("quantile_points4.csv")[, 2:3]
+quantile_points5 <- read.csv("quantile_points5.csv")[, 2:3]
+quantile_points6 <- read.csv("quantile_points6.csv")[, 2:3]
+quantile_points7 <- read.csv("quantile_points7.csv")[, 2:3]
+quantile_points8 <- read.csv("quantile_points8.csv")[, 2:3]
+quantile_points9 <- read.csv("quantile_points9.csv")[, 2:3]
+
+
+plot(X , ylim = c(0 , 140), pch = 20, col = '#58508d', xlab = "Glucose Concentration", ylab = "Blood Pressure" , main= "Quantile Contour Plots")
+
+lines(quantile_points1[, 1], quantile_points1[, 2], col = "#a18aea", lwd = 2)
+lines(quantile_points2[, 1], quantile_points2[, 2], col = "#a18aea", lwd = 2)
+lines(quantile_points3[, 1], quantile_points3[, 2], col = "#a18aea", lwd = 2)
+lines(quantile_points4[, 1], quantile_points4[, 2], col = "#a18aea", lwd = 2)
+lines(quantile_points5[, 1], quantile_points5[, 2], col = "#a18aea", lwd = 2)
+lines(quantile_points6[, 1], quantile_points6[, 2], col = "#a18aea", lwd = 2)
+lines(quantile_points7[, 1], quantile_points7[, 2], col = "#a18aea", lwd = 2)
+lines(quantile_points8[, 1], quantile_points8[, 2], col = "#a18aea", lwd = 2)
+lines(quantile_points9[, 1], quantile_points9[, 2], col = "#a18aea", lwd = 2)
+
+```
+### Interpretations
