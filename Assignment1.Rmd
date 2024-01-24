@@ -286,9 +286,9 @@ Multivariate Quantiles: Consider the bivariate sample $\mathbf{X} = \{ \mathbf{x
 
 For $\mathbf{u} \in \mathbb{R}^2$ such that $||\mathbf{u}|| < 1$, the quantile $q_{\mathbf{x}}(\mathbf{u})$ is defined as:
 
-$$ q_{\mathbf{x}}(\mathbf{u}) = \text{argmin}_{\mathbf{q}} \left\{ E[|(\mathbf{X} - \mathbf{q})| - |(\mathbf{X})|] - \langle \mathbf{u}, \mathbf{q} \rangle \right\} $$
+$$ q_{\mathbf{x}}(\mathbf{u}) = \text{argmin}_{\mathbf{q}} \left\{ E[||(\mathbf{X} - \mathbf{q})|| + \langle \mathbf{u}, \mathbf{X-q} \rangle - ||(\mathbf{X})|| - \langle \mathbf{u}, \mathbf{X} \rangle] \right\} $$
 
-Here, $\langle \mathbf{u}, \mathbf{q} \rangle$ denotes the dot product between $\mathbf{u}$ and $\mathbf{q}$.
+Here, $\langle \mathbf{u}, \mathbf{X-q} \rangle$ denotes the dot product between $\mathbf{u}$ and $\mathbf{X-q}$ and $\langle \mathbf{u}, \mathbf{q} \rangle$ denotes the dot product between $\mathbf{u}$ and $\mathbf{q}$.
 
 ### Methodology
 
