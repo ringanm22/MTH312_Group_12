@@ -39,11 +39,9 @@ The halfspace depth of $x\in\mathbb{R}^d$ w.r.t $F\in\mathcal{P}(\mathbb{R}^d)$ 
 
 where $\mathbb{S}^{d-1} = \{x\in\mathbb{R}^d : ||x|| = 1\}$ is the unit sphere in $\mathbb{R}^d$, and $H_{x, u} = \{y \in\mathbb{R}^d : \langle \; x - y , u \; \rangle \leq 0$ is the closed halfspace whose boundary hyperplane passes through $x\in\mathbb{R}^d$ with inner unit normal $u\in\mathbb{S}^{d-1}$. In other words, the halfspace depth of a point x is the minimum $P$-mass of a halfspace that contains $x$.
 
-
 ### Methodology
 
 The approach we have taken to solve this problem is using data depth, more specifically half space depth. We have multivariate data for three different species. So, we have focused upon the graphical comparisons . Hence we have made pairwise DD plots for three different species and then commented about whether they are obtained from same populations or not.
-
 
 ### Plots
 
@@ -147,7 +145,69 @@ gridExtra::grid.arrange(p21, p22, p23, ncol = 1, top = "DD-plots without standar
 
 Observe that the plots are L-shaped in nature. On the other hand, for each of the plot the data the depth of one species w.r.t. the other species lies above or below the $y = x$ line. This implies that each of the sample for one species is very far away from the other sample for the other species. In other words there are significant difference in location for all the three species.
 
-So, there might be the case that the data is obtained from same distribution but the plots are like this because of the difference of the location. Hence, we have done the DD-plots again after standardizing the data.
+So, there might be the case that the data is obtained from same distribution but the plots are like this because of the difference of the location. Now, let us visualise the data after standardization of all the three clusters, namely, setosa, virginica and versicolor.
+
+```{r, echo = F, fig.height= 8, fig.width=7.5, fig.align='center'}
+
+library(dplyr)
+library(ggplot2)
+library(ddalpha)
+
+iris_setosa <- iris[1:50, 0:4]
+iris_virginica <- iris[51:100, 0:4]
+iris_versicolor <- iris[101:150, 0:4]
+
+iris_setosa <- iris_setosa %>% mutate_all(~(scale(.) %>% as.vector))
+iris_virginica  <- iris_virginica  %>% mutate_all(~(scale(.) %>% as.vector))
+iris_versicolor <- iris_versicolor %>% mutate_all(~(scale(.) %>% as.vector))
+
+df <- rbind(iris_setosa, iris_virginica, iris_versicolor)
+Species <- iris[,5]
+dfs <- cbind(df, Species)
+
+#### ggplots before standardization
+
+p11 <- ggplot(dfs, aes(x = Sepal.Length, y = Sepal.Width,
+                 group = Species, colour = Species)) + 
+  geom_point() +
+  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  theme_test()
+
+p12 <- ggplot(dfs, aes(x = Sepal.Length, y = Petal.Length,
+                 group = Species, colour = Species)) + 
+  geom_point() +
+  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  theme_test()
+
+p13 <- ggplot(dfs, aes(x = Sepal.Width, y = Petal.Width,
+                 group = Species, colour = Species)) + 
+  geom_point() +
+  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  theme_test()
+
+p14 <- ggplot(dfs, aes(x = Petal.Length, y = Petal.Width,
+                 group = Species, colour = Species)) + 
+  geom_point() +
+  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  theme_test()
+
+p15 <- ggplot(dfs, aes(x = Petal.Length, y = Sepal.Width,
+                        group = Species, colour = Species)) + 
+  geom_point() +
+  scale_colour_manual(values = c("red", "purple", "deepskyblue")) +
+  theme_test()
+
+p16 <- ggplot(dfs, aes(x = Sepal.Length, y = Petal.Width,
+                        group = Species, colour = Species)) + 
+  geom_point() +
+  scale_colour_manual(values = c("red", "purple", "deepskyblue")) + 
+  theme_test()
+
+
+gridExtra::grid.arrange(p11, p12, p13, p14, p15, p16, top = "Scatter Plots for different variables after standardizarion for all species")
+```
+
+Clearly, after standardizing the data, all are clustered around the same point. Hence, we have done the DD-plots again after standardizing the data.
 
 ```{r ,echo = F, fig.height= 7.5, fig.width=5, fig.align='center'}
 
@@ -220,13 +280,82 @@ The dataset used in this assignment has been taken from the National Institute o
 
 For our assignment, we have conside#a18aea a bivariate data by choosing Glucose concentration and Blood Pressure as our variable of interest.
 
-### What is Quantile Contours?
+### What are Quantile Contours?
+
+Multivariate Quantiles: Consider the bivariate sample $\mathbf{X} = \{ \mathbf{x}_1, \mathbf{x}_2, \ldots, \mathbf{x}_n \}$, where $\mathbf{x}_i \in \mathbb{R}^2$.
+
+For $\mathbf{u} \in \mathbb{R}^2$ such that $||\mathbf{u}|| < 1$, the quantile $q_{\mathbf{x}}(\mathbf{u})$ is defined as:
+
+$$ q_{\mathbf{x}}(\mathbf{u}) = \text{argmin}_{\mathbf{q}} \left\{ E[|(\mathbf{X} - \mathbf{q})| - |(\mathbf{X})|] - \langle \mathbf{u}, \mathbf{q} \rangle \right\} $$
+
+Here, $\langle \mathbf{u}, \mathbf{q} \rangle$ denotes the dot product between $\mathbf{u}$ and $\mathbf{q}$.
 
 ### Methodology
 
+To calculate the Quantile points for a fixed u, we have followed the following Steps:
+
+Step 1:
+
+For each $1 < i < n$, check whether the condition
+
+$$ \left\| \sum_{j=1, j \neq i
+}^{n} \frac{\mathbf{X}_j - \mathbf{X}_i}{\|\mathbf{X}_j - \mathbf{X}_i\|^{}} + (n-1)\mathbf{u} \right\| \leq (1 + \|\mathbf{u}\|) $$
+
+satisfies. If it satisfies for some $1 < i < n$, then $Q_{\mathbf{X}}(\mathbf{u}) = \mathbf{x}_i$.
+
+```{r}
+step1 <- function(X,mu,n){
+  Q <- numeric(length = 2)
+  for(i in 1:n){
+    if(lhs(X,i,as.matrix(mu),n)<=rhs(mu)){
+      Q <- X[i,]
+      break
+    }
+  }
+  if(Q[1]==0 & Q[2]==0){return(c(FALSE,Q))}
+  else{return(c(TRUE,Q))}
+}
+```
+
+Step 2:
+
+To calculate the Quantile points for a fixed $\mathbf{u}$, we need to solve the following equation if the condition in Step 1 is not satisfied:
+
+$$ \sum_{i=1}^{n} \frac{\mathbf{X}_i - \hat{Q}_n(\mathbf{u})}{||\mathbf{X}_i - \hat{Q}_n(\mathbf{u})|^{}|} \{\mathbf{X}_i - \hat{Q}_n(\mathbf{u})\} + n\mathbf{u} = 0 $$
+
+Here, $\hat{Q}_n(\mathbf{u})$ represents the estimated Quantile point for the fixed $\mathbf{u}$.
+
+This is an optimization problem, and we have used the **optim** function to do the same.
+
+For \|\|ui\|\| = i/10, we have repeated the above algorithm R=25 times using different values of u. Finally, we have connected the corresponding quantile points to obtain the quantile contour.
+
+```{r}
+step2 <- function(X,n,u){
+  iter <- 1
+  Qo <- c(runif(1),runif(1))
+  Xnorms <- numeric(length = n)
+  for(i in 1:n){
+    Xnorms[i] <- norm(X[i,]-c(2,5),type = "2")
+  }
+  Qmax <- max(Xnorms)
+  Qoptim <- optim(par = Qo,fn=eqn,X=X,n=n,u=u,method = "BFGS")
+  par <- Qoptim$par
+  while( iter<20 & norm(par-c(2,5),type = "2")>Qmax){
+    Qo <- c(runif(1),runif(1))
+    Qoptim <- optim(par = Qo,fn=eqn,X=X,n=n,u=u,method = "BFGS")
+    par <- Qoptim$par
+    iter <- iter +1
+    #print(iter)
+  }
+  return(par)
+}
+```
+
 ### Plots
 
-```{r, echo = F, fig.height= 5, fig.width=5, fig.align='center'}
+The centre-outward ordering induced by a data depth immediately gives rise to a simple graphic technique for presenting bivariate data sets. This technique can be viewed as a generalization of the univariate box-plot or box-and-whiskers plot. The plot resembles the sun with its rays radiating in all directions, and is thus named the sunburst
+
+```{r, echo = F, fig.height= 3.5, fig.width=3.5, fig.align='center'}
 
 library(aplpack)
 
@@ -242,8 +371,11 @@ bagplot(X,create.plot=TRUE,
         show.baghull=TRUE,verbose=FALSE, xlab = "Glucose Concentration", ylab = "Blood Pressure" , main= "Sunburst plot")
 ```
 
+**Interpretation:** The spikes that extend far from the central ellipse represent outliers in the data. These are values that are not consistent with the majority of the data points and might be due to various factors such as measurement errors or unusual observations that do not follow the general trend.
 
-```{r, echo = F, fig.height= 5, fig.width=5, fig.align='center'}
+Then, we have done quantile contour plots. The contours are more closely spaced together around the mean. As we move away from the centre, the contours become more spaced out. The contour plot can also be used to identify outliers, clusters, and trends in the data.
+
+```{r, echo = F, fig.height= 4, fig.width=4, fig.align='center'}
 
 library(dplyr)
 X <- read.csv('data_for_plot.csv')[, 2:3]
@@ -271,4 +403,5 @@ lines(quantile_points8[, 1], quantile_points8[, 2], col = "#a18aea", lwd = 2)
 lines(quantile_points9[, 1], quantile_points9[, 2], col = "#a18aea", lwd = 2)
 
 ```
-### Interpretations
+
+**Interpretation:** we can see that there are some outliers in the lower left and upper right corners of the plot, where the data points are far away from the contours. The contour plot can also be used to compare the data with a theoretical model or a fitted curve. For example, we can see that the contours are roughly elliptical in shape, which suggests that the data might follow a bivariate normal distribution.
