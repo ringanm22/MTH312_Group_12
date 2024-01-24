@@ -1,0 +1,11 @@
+plot(X , ylim = c(0 , 140))
+lines(quantile_points1[, 1], quantile_points1[, 2], col = "red", lwd = 2)
+lines(quantile_points2[, 1], quantile_points2[, 2], col = "red", lwd = 2)
+lines(quantile_points3[, 1], quantile_points3[, 2], col = "red", lwd = 2)
+lines(quantile_points4[, 1], quantile_points4[, 2], col = "red", lwd = 2)
+lines(quantile_points5[, 1], quantile_points5[, 2], col = "red", lwd = 2)
+lines(quantile_points6[, 1], quantile_points6[, 2], col = "red", lwd = 2)
+lines(quantile_points7[, 1], quantile_points7[, 2], col = "red", lwd = 2)
+lines(quantile_points8[, 1], quantile_points8[, 2], col = "red", lwd = 2)
+lines(quantile_points9[, 1], quantile_points9[, 2], col = "red", lwd = 2)
+
